@@ -867,3 +867,24 @@ func TestFinishReason(t *testing.T) {
 		}
 	}
 }
+
+func TestChatCompletionRequestMarshalJSON(t *testing.T) {
+	r := openai.ChatCompletionRequest{
+		Model: openai.GPT3Dot5Turbo,
+		Messages: []openai.ChatCompletionMessage{
+			{Role: openai.ChatMessageRoleUser, Content: "Hello!"},
+		},
+		ExtraParam: map[string]any{
+			"foo":   "bar",
+			"model": "invalid",
+		},
+	}
+	resBytes, _ := json.Marshal(r)
+	if !strings.Contains(string(resBytes), `"foo":"bar"`) {
+		t.Errorf("json marshal failed")
+	}
+	if !strings.Contains(string(resBytes), `"model":"gpt-3.5-turbo"`) {
+		t.Errorf("json marshal failed")
+	}
+	fmt.Println(string(resBytes))
+}
