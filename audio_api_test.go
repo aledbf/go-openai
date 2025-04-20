@@ -38,7 +38,7 @@ func TestAudio(t *testing.T) {
 		},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -85,7 +85,7 @@ func TestAudioWithOptionalArgs(t *testing.T) {
 		},
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {

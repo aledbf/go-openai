@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,7 +18,7 @@ func TestGetEngine(t *testing.T) {
 		resBytes, _ := json.Marshal(openai.Engine{})
 		fmt.Fprintln(w, string(resBytes))
 	})
-	_, err := client.GetEngine(context.Background(), "text-davinci-003")
+	_, err := client.GetEngine(t.Context(), "text-davinci-003")
 	checks.NoError(t, err, "GetEngine error")
 }
 
@@ -31,7 +30,7 @@ func TestListEngines(t *testing.T) {
 		resBytes, _ := json.Marshal(openai.EnginesList{})
 		fmt.Fprintln(w, string(resBytes))
 	})
-	_, err := client.ListEngines(context.Background())
+	_, err := client.ListEngines(t.Context())
 	checks.NoError(t, err, "ListEngines error")
 }
 
@@ -42,6 +41,6 @@ func TestListEnginesReturnError(t *testing.T) {
 		w.WriteHeader(http.StatusTeapot)
 	})
 
-	_, err := client.ListEngines(context.Background())
+	_, err := client.ListEngines(t.Context())
 	checks.HasError(t, err, "ListEngines did not fail")
 }

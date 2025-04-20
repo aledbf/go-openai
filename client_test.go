@@ -209,7 +209,7 @@ func TestHandleErrorResp(t *testing.T) {
 				{
 					"error":{}
 				}`)),
-			expected: `error, status code: 503, status: , message: , body: 
+			expected: `error, status code: 503, status: , message: , body:
 				{
 					"error":{}
 				}`,
@@ -226,7 +226,7 @@ func TestHandleErrorResp(t *testing.T) {
 	<hr><center>nginx</center>
 	</body>
 	</html>`)),
-			expected: `error, status code: 413, status: , message: invalid character '<' looking for beginning of value, body: 
+			expected: `error, status code: 413, status: , message: invalid character '<' looking for beginning of value, body:
 	<html>
 	<head><title>413 Request Entity Too Large</title></head>
 	<body>
@@ -267,7 +267,7 @@ func TestClientReturnsRequestBuilderErrors(t *testing.T) {
 	config := DefaultConfig(test.GetTestToken())
 	client := NewClientWithConfig(config)
 	client.requestBuilder = &failingRequestBuilder{}
-	ctx := context.Background()
+	ctx := t.Context()
 
 	type TestCase struct {
 		Name     string
@@ -474,7 +474,7 @@ func TestClientReturnsRequestBuilderErrorsAddition(t *testing.T) {
 	config := DefaultConfig(test.GetTestToken())
 	client := NewClientWithConfig(config)
 	client.requestBuilder = &failingRequestBuilder{}
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err := client.CreateCompletion(ctx, CompletionRequest{Prompt: 1})
 	if !errors.Is(err, ErrCompletionRequestPromptTypeNotSupported) {
 		t.Fatalf("Did not return error when request builder failed: %v", err)

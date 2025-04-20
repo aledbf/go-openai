@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -27,7 +26,7 @@ func TestUploadBatchFile(t *testing.T) {
 			},
 		},
 	})
-	_, err := client.UploadBatchFile(context.Background(), req)
+	_, err := client.UploadBatchFile(t.Context(), req)
 	checks.NoError(t, err, "UploadBatchFile error")
 }
 
@@ -36,7 +35,7 @@ func TestCreateBatch(t *testing.T) {
 	defer teardown()
 
 	server.RegisterHandler("/v1/batches", handleBatchEndpoint)
-	_, err := client.CreateBatch(context.Background(), openai.CreateBatchRequest{
+	_, err := client.CreateBatch(t.Context(), openai.CreateBatchRequest{
 		InputFileID:      "file-abc",
 		Endpoint:         openai.BatchEndpointChatCompletions,
 		CompletionWindow: "24h",
@@ -62,7 +61,7 @@ func TestCreateBatchWithUploadFile(t *testing.T) {
 			},
 		},
 	})
-	_, err := client.CreateBatchWithUploadFile(context.Background(), req)
+	_, err := client.CreateBatchWithUploadFile(t.Context(), req)
 	checks.NoError(t, err, "CreateBatchWithUploadFile error")
 }
 
@@ -70,7 +69,7 @@ func TestRetrieveBatch(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/batches/file-id-1", handleRetrieveBatchEndpoint)
-	_, err := client.RetrieveBatch(context.Background(), "file-id-1")
+	_, err := client.RetrieveBatch(t.Context(), "file-id-1")
 	checks.NoError(t, err, "RetrieveBatch error")
 }
 
@@ -78,7 +77,7 @@ func TestCancelBatch(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/batches/file-id-1/cancel", handleCancelBatchEndpoint)
-	_, err := client.CancelBatch(context.Background(), "file-id-1")
+	_, err := client.CancelBatch(t.Context(), "file-id-1")
 	checks.NoError(t, err, "RetrieveBatch error")
 }
 
@@ -88,7 +87,7 @@ func TestListBatch(t *testing.T) {
 	server.RegisterHandler("/v1/batches", handleBatchEndpoint)
 	after := "batch_abc123"
 	limit := 10
-	_, err := client.ListBatch(context.Background(), &after, &limit)
+	_, err := client.ListBatch(t.Context(), &after, &limit)
 	checks.NoError(t, err, "RetrieveBatch error")
 }
 

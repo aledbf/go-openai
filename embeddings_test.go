@@ -2,7 +2,6 @@ package openai_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -118,7 +117,7 @@ func TestEmbeddingEndpoint(t *testing.T) {
 		},
 	)
 	// test create embeddings with strings (simple embedding request)
-	res, err := client.CreateEmbeddings(context.Background(), openai.EmbeddingRequest{})
+	res, err := client.CreateEmbeddings(t.Context(), openai.EmbeddingRequest{})
 	checks.NoError(t, err, "CreateEmbeddings error")
 	if !reflect.DeepEqual(res.Data, sampleEmbeddings) {
 		t.Errorf("Expected %#v embeddings, got %#v", sampleEmbeddings, res.Data)
@@ -126,7 +125,7 @@ func TestEmbeddingEndpoint(t *testing.T) {
 
 	// test create embeddings with strings (simple embedding request)
 	res, err = client.CreateEmbeddings(
-		context.Background(),
+		t.Context(),
 		openai.EmbeddingRequest{
 			EncodingFormat: openai.EmbeddingEncodingFormatBase64,
 		},
@@ -137,21 +136,21 @@ func TestEmbeddingEndpoint(t *testing.T) {
 	}
 
 	// test create embeddings with strings
-	res, err = client.CreateEmbeddings(context.Background(), openai.EmbeddingRequestStrings{})
+	res, err = client.CreateEmbeddings(t.Context(), openai.EmbeddingRequestStrings{})
 	checks.NoError(t, err, "CreateEmbeddings strings error")
 	if !reflect.DeepEqual(res.Data, sampleEmbeddings) {
 		t.Errorf("Expected %#v embeddings, got %#v", sampleEmbeddings, res.Data)
 	}
 
 	// test create embeddings with tokens
-	res, err = client.CreateEmbeddings(context.Background(), openai.EmbeddingRequestTokens{})
+	res, err = client.CreateEmbeddings(t.Context(), openai.EmbeddingRequestTokens{})
 	checks.NoError(t, err, "CreateEmbeddings tokens error")
 	if !reflect.DeepEqual(res.Data, sampleEmbeddings) {
 		t.Errorf("Expected %#v embeddings, got %#v", sampleEmbeddings, res.Data)
 	}
 
 	// test failed sendRequest
-	_, err = client.CreateEmbeddings(context.Background(), openai.EmbeddingRequest{
+	_, err = client.CreateEmbeddings(t.Context(), openai.EmbeddingRequest{
 		User:           "invalid",
 		EncodingFormat: openai.EmbeddingEncodingFormatBase64,
 	})
@@ -175,7 +174,7 @@ func TestAzureEmbeddingEndpoint(t *testing.T) {
 		},
 	)
 	// test create embeddings with strings (simple embedding request)
-	res, err := client.CreateEmbeddings(context.Background(), openai.EmbeddingRequest{
+	res, err := client.CreateEmbeddings(t.Context(), openai.EmbeddingRequest{
 		Model: openai.AdaEmbeddingV2,
 	})
 	checks.NoError(t, err, "CreateEmbeddings error")

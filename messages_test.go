@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -192,7 +191,7 @@ func TestMessages(t *testing.T) {
 	defer teardown()
 
 	setupServerForTestMessage(t, server)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	// static assertion of return type
 	var msg openai.Message

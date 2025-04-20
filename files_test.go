@@ -1,7 +1,6 @@
 package openai //nolint:testpackage // testing private field
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
@@ -20,7 +19,7 @@ func TestFileBytesUploadWithFailingFormBuilder(t *testing.T) {
 		return mockBuilder
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	req := FileBytesRequest{
 		Name:    "foo",
 		Bytes:   []byte("foo"),
@@ -67,7 +66,7 @@ func TestFileUploadWithFailingFormBuilder(t *testing.T) {
 		return mockBuilder
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	req := FileRequest{
 		FileName: "test.go",
 		FilePath: "client.go",
@@ -113,7 +112,7 @@ func TestFileUploadWithNonExistentPath(t *testing.T) {
 	config.BaseURL = ""
 	client := NewClientWithConfig(config)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	req := FileRequest{
 		FilePath: "some non existent file path/F616FD18-589E-44A8-BF0C-891EAE69C455",
 	}

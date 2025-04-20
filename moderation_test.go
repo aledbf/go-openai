@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,7 +19,7 @@ func TestModerations(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/moderations", handleModerationEndpoint)
-	_, err := client.Moderations(context.Background(), openai.ModerationRequest{
+	_, err := client.Moderations(t.Context(), openai.ModerationRequest{
 		Model: openai.ModerationTextStable,
 		Input: "I want to kill them.",
 	})
@@ -45,7 +44,7 @@ func TestModerationsWithDifferentModelOptions(t *testing.T) {
 	defer teardown()
 	server.RegisterHandler("/v1/moderations", handleModerationEndpoint)
 	for _, modelTest := range modelOptions {
-		_, err := client.Moderations(context.Background(), openai.ModerationRequest{
+		_, err := client.Moderations(t.Context(), openai.ModerationRequest{
 			Model: modelTest.model,
 			Input: "I want to kill them.",
 		})

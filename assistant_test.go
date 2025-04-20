@@ -1,8 +1,6 @@
 package openai_test
 
 import (
-	"context"
-
 	openai "github.com/sashabaranov/go-openai"
 	"github.com/sashabaranov/go-openai/internal/test/checks"
 
@@ -17,7 +15,7 @@ func TestAssistant(t *testing.T) {
 	assistantID := "asst_abc123"
 	assistantName := "Ambrogio"
 	assistantDescription := "Ambrogio is a friendly assistant."
-	assistantInstructions := `You are a personal math tutor. 
+	assistantInstructions := `You are a personal math tutor.
 When asked a question, write and run Python code to answer the question.`
 	assistantFileID := "file-wB6RM6wHdA49HfS2DJ9fEyrH"
 	limit := 20
@@ -161,7 +159,7 @@ When asked a question, write and run Python code to answer the question.`
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("create_assistant", func(t *testing.T) {
 		_, err := client.CreateAssistant(ctx, openai.AssistantRequest{
@@ -260,7 +258,7 @@ func TestAzureAssistant(t *testing.T) {
 	assistantID := "asst_abc123"
 	assistantName := "Ambrogio"
 	assistantDescription := "Ambrogio is a friendly assistant."
-	assistantInstructions := `You are a personal math tutor. 
+	assistantInstructions := `You are a personal math tutor.
 When asked a question, write and run Python code to answer the question.`
 	assistantFileID := "file-wB6RM6wHdA49HfS2DJ9fEyrH"
 	limit := 20
@@ -404,7 +402,7 @@ When asked a question, write and run Python code to answer the question.`
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.CreateAssistant(ctx, openai.AssistantRequest{
 		Name:         &assistantName,

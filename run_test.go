@@ -1,8 +1,6 @@
 package openai_test
 
 import (
-	"context"
-
 	openai "github.com/sashabaranov/go-openai"
 	"github.com/sashabaranov/go-openai/internal/test/checks"
 
@@ -168,7 +166,7 @@ func TestRun(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.CreateRun(ctx, threadID, openai.RunRequest{
 		AssistantID: assistantID,

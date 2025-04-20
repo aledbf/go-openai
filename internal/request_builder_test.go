@@ -2,7 +2,6 @@ package openai //nolint:testpackage // testing private field
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"net/http"
 	"reflect"
@@ -22,7 +21,7 @@ func TestRequestBuilderReturnsMarshallerErrors(t *testing.T) {
 		marshaller: &failingMarshaller{},
 	}
 
-	_, err := builder.Build(context.Background(), "", "", struct{}{}, nil)
+	_, err := builder.Build(t.Context(), "", "", struct{}{}, nil)
 	if !errors.Is(err, errTestMarshallerFailed) {
 		t.Fatalf("Did not return error when marshaller failed: %v", err)
 	}
@@ -31,7 +30,7 @@ func TestRequestBuilderReturnsMarshallerErrors(t *testing.T) {
 func TestRequestBuilderReturnsRequest(t *testing.T) {
 	b := NewRequestBuilder()
 	var (
-		ctx         = context.Background()
+		ctx         = t.Context()
 		method      = http.MethodPost
 		url         = "/foo"
 		request     = map[string]string{"foo": "bar"}
@@ -48,7 +47,7 @@ func TestRequestBuilderReturnsRequest(t *testing.T) {
 
 func TestRequestBuilderReturnsRequestWhenRequestOfArgsIsNil(t *testing.T) {
 	var (
-		ctx     = context.Background()
+		ctx     = t.Context()
 		method  = http.MethodGet
 		url     = "/foo"
 		want, _ = http.NewRequestWithContext(ctx, method, url, nil)

@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,7 +21,7 @@ func TestCompletionsWrongModel(t *testing.T) {
 	client := openai.NewClientWithConfig(config)
 
 	_, err := client.CreateCompletion(
-		context.Background(),
+		t.Context(),
 		openai.CompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo,
@@ -37,7 +36,7 @@ func TestCompletionWithStream(t *testing.T) {
 	config := openai.DefaultConfig("whatever")
 	client := openai.NewClientWithConfig(config)
 
-	ctx := context.Background()
+	ctx := t.Context()
 	req := openai.CompletionRequest{Stream: true}
 	_, err := client.CreateCompletion(ctx, req)
 	if !errors.Is(err, openai.ErrCompletionStreamNotSupported) {
@@ -55,7 +54,7 @@ func TestCompletions(t *testing.T) {
 		Model:     "ada",
 		Prompt:    "Lorem ipsum",
 	}
-	_, err := client.CreateCompletion(context.Background(), req)
+	_, err := client.CreateCompletion(t.Context(), req)
 	checks.NoError(t, err, "CreateCompletion error")
 }
 
@@ -70,7 +69,7 @@ func TestMultiplePromptsCompletionsWrong(t *testing.T) {
 		Model:     "ada",
 		Prompt:    []interface{}{"Lorem ipsum", 9},
 	}
-	_, err := client.CreateCompletion(context.Background(), req)
+	_, err := client.CreateCompletion(t.Context(), req)
 	if !errors.Is(err, openai.ErrCompletionRequestPromptTypeNotSupported) {
 		t.Fatalf("CreateCompletion should return ErrCompletionRequestPromptTypeNotSupported, but returned: %v", err)
 	}
@@ -87,7 +86,7 @@ func TestMultiplePromptsCompletions(t *testing.T) {
 		Model:     "ada",
 		Prompt:    []interface{}{"Lorem ipsum", "Lorem ipsum"},
 	}
-	_, err := client.CreateCompletion(context.Background(), req)
+	_, err := client.CreateCompletion(t.Context(), req)
 	checks.NoError(t, err, "CreateCompletion error")
 }
 

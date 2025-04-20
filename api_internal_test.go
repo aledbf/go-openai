@@ -1,7 +1,6 @@
 package openai
 
 import (
-	"context"
 	"testing"
 )
 
@@ -94,7 +93,7 @@ func TestRequestAuthHeader(t *testing.T) {
 			az.OrgID = c.OrgID
 
 			cli := NewClientWithConfig(az)
-			req, err := cli.newRequest(context.Background(), "POST", "/chat/completions")
+			req, err := cli.newRequest(t.Context(), "POST", "/chat/completions")
 			if err != nil {
 				t.Errorf("Failed to create request: %v", err)
 			}

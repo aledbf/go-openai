@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -68,7 +67,7 @@ func TestFineTuningJob(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.CreateFineTuningJob(ctx, openai.FineTuningJobRequest{})
 	checks.NoError(t, err, "CreateFineTuningJob error")

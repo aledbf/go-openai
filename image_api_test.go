@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,7 +18,7 @@ func TestImages(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/images/generations", handleImageEndpoint)
-	_, err := client.CreateImage(context.Background(), openai.ImageRequest{
+	_, err := client.CreateImage(t.Context(), openai.ImageRequest{
 		Prompt:         "Lorem ipsum",
 		Model:          openai.CreateImageModelDallE3,
 		N:              1,
@@ -99,7 +98,7 @@ func TestImageEdit(t *testing.T) {
 	}
 	defer mask.Close()
 
-	_, err = client.CreateEditImage(context.Background(), openai.ImageEditRequest{
+	_, err = client.CreateEditImage(t.Context(), openai.ImageEditRequest{
 		Image:          origin,
 		Mask:           mask,
 		Prompt:         "There is a turtle in the pool",
@@ -121,7 +120,7 @@ func TestImageEditWithoutMask(t *testing.T) {
 	}
 	defer origin.Close()
 
-	_, err = client.CreateEditImage(context.Background(), openai.ImageEditRequest{
+	_, err = client.CreateEditImage(t.Context(), openai.ImageEditRequest{
 		Image:          origin,
 		Prompt:         "There is a turtle in the pool",
 		N:              3,
@@ -173,7 +172,7 @@ func TestImageVariation(t *testing.T) {
 	}
 	defer origin.Close()
 
-	_, err = client.CreateVariImage(context.Background(), openai.ImageVariRequest{
+	_, err = client.CreateVariImage(t.Context(), openai.ImageVariRequest{
 		Image:          origin,
 		N:              3,
 		Size:           openai.CreateImageSize1024x1024,

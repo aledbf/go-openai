@@ -20,7 +20,7 @@ func TestCompletionsStreamWrongModel(t *testing.T) {
 	client := openai.NewClientWithConfig(config)
 
 	_, err := client.CreateCompletionStream(
-		context.Background(),
+		t.Context(),
 		openai.CompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo,
@@ -56,7 +56,7 @@ func TestCreateCompletionStream(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	stream, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		Prompt:    "Ex falso quodlibet",
 		Model:     "text-davinci-002",
 		MaxTokens: 10,
@@ -129,7 +129,7 @@ func TestCreateCompletionStreamError(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	stream, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3TextDavinci003,
 		Prompt:    "Hello!",
@@ -167,7 +167,7 @@ func TestCreateCompletionStreamRateLimitError(t *testing.T) {
 	})
 
 	var apiErr *openai.APIError
-	_, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	_, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Babbage002,
 		Prompt:    "Hello!",
@@ -209,7 +209,7 @@ func TestCreateCompletionStreamTooManyEmptyStreamMessagesError(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	stream, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		Prompt:    "Ex falso quodlibet",
 		Model:     "text-davinci-002",
 		MaxTokens: 10,
@@ -244,7 +244,7 @@ func TestCreateCompletionStreamUnexpectedTerminatedError(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	stream, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		Prompt:    "Ex falso quodlibet",
 		Model:     "text-davinci-002",
 		MaxTokens: 10,
@@ -285,7 +285,7 @@ func TestCreateCompletionStreamBrokenJSONError(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateCompletionStream(context.Background(), openai.CompletionRequest{
+	stream, err := client.CreateCompletionStream(t.Context(), openai.CompletionRequest{
 		Prompt:    "Ex falso quodlibet",
 		Model:     "text-davinci-002",
 		MaxTokens: 10,
@@ -308,7 +308,7 @@ func TestCreateCompletionStreamReturnTimeoutError(t *testing.T) {
 	server.RegisterHandler("/v1/completions", func(http.ResponseWriter, *http.Request) {
 		time.Sleep(10 * time.Nanosecond)
 	})
-	ctx := context.Background()
+	ctx := t.Context()
 	ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 	defer cancel()
 

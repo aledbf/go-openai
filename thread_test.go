@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -68,7 +67,7 @@ func TestThread(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.CreateThread(ctx, openai.ThreadRequest{
 		Messages: []openai.ThreadMessage{
@@ -151,7 +150,7 @@ func TestAzureThread(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.CreateThread(ctx, openai.ThreadRequest{
 		Messages: []openai.ThreadMessage{

@@ -3,7 +3,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -23,7 +22,7 @@ func TestAPI(t *testing.T) {
 
 	var err error
 	c := openai.NewClient(apiToken)
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err = c.ListEngines(ctx)
 	checks.NoError(t, err, "ListEngines error")
 
@@ -79,7 +78,7 @@ func TestAPI(t *testing.T) {
 	checks.NoError(t, err, "CreateChatCompletion (with name) returned error")
 
 	_, err = c.CreateChatCompletion(
-		context.Background(),
+		t.Context(),
 		openai.ChatCompletionRequest{
 			Model: openai.GPT3Dot5Turbo,
 			Messages: []openai.ChatCompletionMessage{
@@ -117,7 +116,7 @@ func TestCompletionStream(t *testing.T) {
 	}
 
 	c := openai.NewClient(apiToken)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	stream, err := c.CreateCompletionStream(ctx, openai.CompletionRequest{
 		Prompt:    "Ex falso quodlibet",
@@ -153,7 +152,7 @@ func TestAPIError(t *testing.T) {
 
 	var err error
 	c := openai.NewClient(apiToken + "_invalid")
-	ctx := context.Background()
+	ctx := t.Context()
 	_, err = c.ListEngines(ctx)
 	checks.HasError(t, err, "ListEngines should fail with an invalid key")
 
@@ -188,7 +187,7 @@ func TestChatCompletionResponseFormat_JSONSchema(t *testing.T) {
 
 	var err error
 	c := openai.NewClient(apiToken)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	type MyStructuredResponse struct {
 		PascalCase string `json:"pascal_case" required:"true" description:"PascalCase"`
@@ -245,7 +244,7 @@ func TestChatCompletionStructuredOutputsFunctionCalling(t *testing.T) {
 
 	var err error
 	c := openai.NewClient(apiToken)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	resp, err := c.CreateChatCompletion(
 		ctx,

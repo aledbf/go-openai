@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -78,7 +77,7 @@ func TestSpeechIntegration(t *testing.T) {
 	})
 
 	t.Run("happy path", func(t *testing.T) {
-		res, err := client.CreateSpeech(context.Background(), openai.CreateSpeechRequest{
+		res, err := client.CreateSpeech(t.Context(), openai.CreateSpeechRequest{
 			Model: openai.TTSModel1,
 			Input: "Hello!",
 			Voice: openai.VoiceAlloy,

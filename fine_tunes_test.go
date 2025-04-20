@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -59,7 +58,7 @@ func TestFineTunes(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	_, err := client.ListFineTunes(ctx)
 	checks.NoError(t, err, "ListFineTunes error")

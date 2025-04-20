@@ -20,7 +20,7 @@ func TestListModels(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/models", handleListModelsEndpoint)
-	_, err := client.ListModels(context.Background())
+	_, err := client.ListModels(t.Context())
 	checks.NoError(t, err, "ListModels error")
 }
 
@@ -28,7 +28,7 @@ func TestAzureListModels(t *testing.T) {
 	client, server, teardown := setupAzureTestServer()
 	defer teardown()
 	server.RegisterHandler("/openai/models", handleListModelsEndpoint)
-	_, err := client.ListModels(context.Background())
+	_, err := client.ListModels(t.Context())
 	checks.NoError(t, err, "ListModels error")
 }
 
@@ -43,7 +43,7 @@ func TestGetModel(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/models/text-davinci-003", handleGetModelEndpoint)
-	_, err := client.GetModel(context.Background(), "text-davinci-003")
+	_, err := client.GetModel(t.Context(), "text-davinci-003")
 	checks.NoError(t, err, "GetModel error")
 }
 
@@ -51,7 +51,7 @@ func TestAzureGetModel(t *testing.T) {
 	client, server, teardown := setupAzureTestServer()
 	defer teardown()
 	server.RegisterHandler("/openai/models/text-davinci-003", handleGetModelEndpoint)
-	_, err := client.GetModel(context.Background(), "text-davinci-003")
+	_, err := client.GetModel(t.Context(), "text-davinci-003")
 	checks.NoError(t, err, "GetModel error")
 }
 
@@ -67,7 +67,7 @@ func TestGetModelReturnTimeoutError(t *testing.T) {
 	server.RegisterHandler("/v1/models/text-davinci-003", func(http.ResponseWriter, *http.Request) {
 		time.Sleep(10 * time.Nanosecond)
 	})
-	ctx := context.Background()
+	ctx := t.Context()
 	ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 	defer cancel()
 
@@ -84,7 +84,7 @@ func TestDeleteFineTuneModel(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/models/"+testFineTuneModelID, handleDeleteFineTuneModelEndpoint)
-	_, err := client.DeleteFineTuneModel(context.Background(), testFineTuneModelID)
+	_, err := client.DeleteFineTuneModel(t.Context(), testFineTuneModelID)
 	checks.NoError(t, err, "DeleteFineTuneModel error")
 }
 

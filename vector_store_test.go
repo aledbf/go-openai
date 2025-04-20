@@ -1,8 +1,6 @@
 package openai_test
 
 import (
-	"context"
-
 	openai "github.com/sashabaranov/go-openai"
 	"github.com/sashabaranov/go-openai/internal/test/checks"
 
@@ -253,7 +251,7 @@ func TestVectorStore(t *testing.T) {
 		},
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("create_vector_store", func(t *testing.T) {
 		_, err := client.CreateVectorStore(ctx, openai.VectorStoreRequest{
@@ -273,7 +271,7 @@ func TestVectorStore(t *testing.T) {
 	})
 
 	t.Run("list_vector_store", func(t *testing.T) {
-		_, err := client.ListVectorStores(context.TODO(), openai.Pagination{
+		_, err := client.ListVectorStores(t.Context(), openai.Pagination{
 			Limit:  &limit,
 			Order:  &order,
 			After:  &after,
@@ -283,7 +281,7 @@ func TestVectorStore(t *testing.T) {
 	})
 
 	t.Run("create_vector_store_file", func(t *testing.T) {
-		_, err := client.CreateVectorStoreFile(context.TODO(), vectorStoreID, openai.VectorStoreFileRequest{
+		_, err := client.CreateVectorStoreFile(t.Context(), vectorStoreID, openai.VectorStoreFileRequest{
 			FileID: vectorStoreFileID,
 		})
 		checks.NoError(t, err, "CreateVectorStoreFile error")

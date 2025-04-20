@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -35,7 +34,7 @@ func TestChatCompletionsWrongModel(t *testing.T) {
 	config := openai.DefaultConfig("whatever")
 	config.BaseURL = "http://localhost/v1"
 	client := openai.NewClientWithConfig(config)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	req := openai.ChatCompletionRequest{
 		MaxTokens: 5,
@@ -81,7 +80,7 @@ func TestO1ModelsChatCompletionsDeprecatedFields(t *testing.T) {
 			config := openai.DefaultConfig("whatever")
 			config.BaseURL = "http://localhost/v1"
 			client := openai.NewClientWithConfig(config)
-			ctx := context.Background()
+			ctx := t.Context()
 
 			_, err := client.CreateChatCompletion(ctx, tt.in)
 			checks.HasError(t, err)
@@ -201,7 +200,7 @@ func TestO1ModelsChatCompletionsBetaLimitations(t *testing.T) {
 			config := openai.DefaultConfig("whatever")
 			config.BaseURL = "http://localhost/v1"
 			client := openai.NewClientWithConfig(config)
-			ctx := context.Background()
+			ctx := t.Context()
 
 			_, err := client.CreateChatCompletion(ctx, tt.in)
 			checks.HasError(t, err)
@@ -321,7 +320,7 @@ func TestO3ModelsChatCompletionsBetaLimitations(t *testing.T) {
 			config := openai.DefaultConfig("whatever")
 			config.BaseURL = "http://localhost/v1"
 			client := openai.NewClientWithConfig(config)
-			ctx := context.Background()
+			ctx := t.Context()
 
 			_, err := client.CreateChatCompletion(ctx, tt.in)
 			checks.HasError(t, err)
@@ -339,7 +338,7 @@ func TestChatRequestOmitEmpty(t *testing.T) {
 	checks.NoError(t, err)
 
 	// messages is also required so isn't omitted
-	const expected = `{"model":"gpt-4","messages":null}`
+	const expected = `{"messages":null,"model":"gpt-4"}`
 	if string(data) != expected {
 		t.Errorf("expected JSON with all empty fields to be %v but was %v", expected, string(data))
 	}
@@ -349,7 +348,7 @@ func TestChatCompletionsWithStream(t *testing.T) {
 	config := openai.DefaultConfig("whatever")
 	config.BaseURL = "http://localhost/v1"
 	client := openai.NewClientWithConfig(config)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	req := openai.ChatCompletionRequest{
 		Stream: true,
@@ -363,7 +362,7 @@ func TestChatCompletions(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/chat/completions", handleChatCompletionEndpoint)
-	_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -381,7 +380,7 @@ func TestO1ModelChatCompletions(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/chat/completions", handleChatCompletionEndpoint)
-	_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		Model:               openai.O1Preview,
 		MaxCompletionTokens: 1000,
 		Messages: []openai.ChatCompletionMessage{
@@ -398,7 +397,7 @@ func TestO3ModelChatCompletions(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/chat/completions", handleChatCompletionEndpoint)
-	_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		Model:               openai.O3Mini,
 		MaxCompletionTokens: 1000,
 		Messages: []openai.ChatCompletionMessage{
@@ -416,7 +415,7 @@ func TestChatCompletionsWithHeaders(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/chat/completions", handleChatCompletionEndpoint)
-	resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	resp, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -440,7 +439,7 @@ func TestChatCompletionsWithRateLimitHeaders(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/chat/completions", handleChatCompletionEndpoint)
-	resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	resp, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -477,7 +476,7 @@ func TestChatCompletionsFunctions(t *testing.T) {
 	t.Run("bytes", func(t *testing.T) {
 		//nolint:lll
 		msg := json.RawMessage(`{"properties":{"count":{"type":"integer","description":"total number of words in sentence"},"words":{"items":{"type":"string"},"type":"array","description":"list of words in sentence"}},"type":"object","required":["count","words"]}`)
-		_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo0613,
 			Messages: []openai.ChatCompletionMessage{
@@ -502,7 +501,7 @@ func TestChatCompletionsFunctions(t *testing.T) {
 			Count: 2,
 			Words: []string{"hello", "world"},
 		}
-		_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo0613,
 			Messages: []openai.ChatCompletionMessage{
@@ -519,7 +518,7 @@ func TestChatCompletionsFunctions(t *testing.T) {
 		checks.NoError(t, err, "CreateChatCompletion with functions error")
 	})
 	t.Run("JSONSchemaDefinition", func(t *testing.T) {
-		_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo0613,
 			Messages: []openai.ChatCompletionMessage{
@@ -556,7 +555,7 @@ func TestChatCompletionsFunctions(t *testing.T) {
 	})
 	t.Run("JSONSchemaDefinitionWithFunctionDefine", func(t *testing.T) {
 		// this is a compatibility check
-		_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo0613,
 			Messages: []openai.ChatCompletionMessage{
@@ -600,7 +599,7 @@ func TestChatCompletionsFunctions(t *testing.T) {
 			Count: 2,
 			Words: []string{"hello", "world"},
 		}
-		_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 			MaxTokens: 5,
 			Model:     openai.GPT3Dot5Turbo0613,
 			Messages: []openai.ChatCompletionMessage{
@@ -624,7 +623,7 @@ func TestAzureChatCompletions(t *testing.T) {
 	defer teardown()
 	server.RegisterHandler("/openai/deployments/*", handleChatCompletionEndpoint)
 
-	_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -642,7 +641,7 @@ func TestMultipartChatCompletions(t *testing.T) {
 	defer teardown()
 	server.RegisterHandler("/openai/deployments/*", handleChatCompletionEndpoint)
 
-	_, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletion(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -886,5 +885,6 @@ func TestChatCompletionRequestMarshalJSON(t *testing.T) {
 	if !strings.Contains(string(resBytes), `"model":"gpt-3.5-turbo"`) {
 		t.Errorf("json marshal failed")
 	}
+	//nolint:forbidigo
 	fmt.Println(string(resBytes))
 }

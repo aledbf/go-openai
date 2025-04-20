@@ -25,7 +25,7 @@ func TestFileBytesUpload(t *testing.T) {
 		Bytes:   []byte("foo"),
 		Purpose: openai.PurposeFineTune,
 	}
-	_, err := client.CreateFileBytes(context.Background(), req)
+	_, err := client.CreateFileBytes(t.Context(), req)
 	checks.NoError(t, err, "CreateFile error")
 }
 
@@ -38,7 +38,7 @@ func TestFileUpload(t *testing.T) {
 		FilePath: "client.go",
 		Purpose:  "fine-tune",
 	}
-	_, err := client.CreateFile(context.Background(), req)
+	_, err := client.CreateFile(t.Context(), req)
 	checks.NoError(t, err, "CreateFile error")
 }
 
@@ -87,7 +87,7 @@ func TestDeleteFile(t *testing.T) {
 	client, server, teardown := setupOpenAITestServer()
 	defer teardown()
 	server.RegisterHandler("/v1/files/deadbeef", func(http.ResponseWriter, *http.Request) {})
-	err := client.DeleteFile(context.Background(), "deadbeef")
+	err := client.DeleteFile(t.Context(), "deadbeef")
 	checks.NoError(t, err, "DeleteFile error")
 }
 
@@ -98,7 +98,7 @@ func TestListFile(t *testing.T) {
 		resBytes, _ := json.Marshal(openai.FilesList{})
 		fmt.Fprintln(w, string(resBytes))
 	})
-	_, err := client.ListFiles(context.Background())
+	_, err := client.ListFiles(t.Context())
 	checks.NoError(t, err, "ListFiles error")
 }
 
@@ -109,7 +109,7 @@ func TestGetFile(t *testing.T) {
 		resBytes, _ := json.Marshal(openai.File{})
 		fmt.Fprintln(w, string(resBytes))
 	})
-	_, err := client.GetFile(context.Background(), "deadbeef")
+	_, err := client.GetFile(t.Context(), "deadbeef")
 	checks.NoError(t, err, "GetFile error")
 }
 
@@ -128,7 +128,7 @@ func TestGetFileContent(t *testing.T) {
 		fmt.Fprint(w, wantRespJsonl)
 	})
 
-	content, err := client.GetFileContent(context.Background(), "deadbeef")
+	content, err := client.GetFileContent(t.Context(), "deadbeef")
 	checks.NoError(t, err, "GetFileContent error")
 	defer content.Close()
 
@@ -157,7 +157,7 @@ func TestGetFileContentReturnError(t *testing.T) {
 		fmt.Fprint(w, wantErrorResp)
 	})
 
-	_, err := client.GetFileContent(context.Background(), "deadbeef")
+	_, err := client.GetFileContent(t.Context(), "deadbeef")
 	if err == nil {
 		t.Fatal("Did not return error")
 	}
@@ -182,7 +182,7 @@ func TestGetFileContentReturnTimeoutError(t *testing.T) {
 	server.RegisterHandler("/v1/files/deadbeef/content", func(http.ResponseWriter, *http.Request) {
 		time.Sleep(10 * time.Nanosecond)
 	})
-	ctx := context.Background()
+	ctx := t.Context()
 	ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 	defer cancel()
 

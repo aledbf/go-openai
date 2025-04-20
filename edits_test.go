@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -29,7 +28,7 @@ func TestEdits(t *testing.T) {
 		Instruction: "test instruction",
 		N:           3,
 	}
-	response, err := client.Edits(context.Background(), editReq)
+	response, err := client.Edits(t.Context(), editReq)
 	checks.NoError(t, err, "Edits error")
 	if len(response.Choices) != editReq.N {
 		t.Fatalf("edits does not properly return the correct number of choices")

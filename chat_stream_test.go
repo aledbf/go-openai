@@ -1,7 +1,6 @@
 package openai_test
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,7 +17,7 @@ func TestChatCompletionsStreamWrongModel(t *testing.T) {
 	config := openai.DefaultConfig("whatever")
 	config.BaseURL = "http://localhost/v1"
 	client := openai.NewClientWithConfig(config)
-	ctx := context.Background()
+	ctx := t.Context()
 
 	req := openai.ChatCompletionRequest{
 		MaxTokens: 5,
@@ -61,7 +60,7 @@ func TestCreateChatCompletionStream(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -158,7 +157,7 @@ func TestCreateChatCompletionStreamError(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -198,7 +197,7 @@ func TestCreateChatCompletionStreamWithHeaders(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -241,7 +240,7 @@ func TestCreateChatCompletionStreamWithRatelimitHeaders(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -278,7 +277,7 @@ func TestCreateChatCompletionStreamErrorWithDataPrefix(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -319,7 +318,7 @@ func TestCreateChatCompletionStreamRateLimitError(t *testing.T) {
 		_, err := w.Write(dataBytes)
 		checks.NoError(t, err, "Write error")
 	})
-	_, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -367,7 +366,7 @@ func TestCreateChatCompletionStreamWithRefusal(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 2000,
 		Model:     openai.GPT4oMini20240718,
 		Messages: []openai.ChatCompletionMessage{
@@ -488,7 +487,7 @@ func TestCreateChatCompletionStreamWithLogprobs(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 2000,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -623,7 +622,7 @@ func TestAzureCreateChatCompletionStreamRateLimitError(t *testing.T) {
 		})
 
 	apiErr := &openai.APIError{}
-	_, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	_, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -680,7 +679,7 @@ func TestCreateChatCompletionStreamStreamOptions(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 5,
 		Model:     openai.GPT3Dot5Turbo,
 		Messages: []openai.ChatCompletionMessage{
@@ -826,7 +825,7 @@ func TestCreateChatCompletionStreamWithReasoningModel(t *testing.T) {
 		checks.NoError(t, err, "Write error")
 	})
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxCompletionTokens: 2000,
 		Model:               openai.O3Mini20250131,
 		Messages: []openai.ChatCompletionMessage{
@@ -937,7 +936,7 @@ func TestCreateChatCompletionStreamWithReasoningModel(t *testing.T) {
 func TestCreateChatCompletionStreamReasoningValidatorFails(t *testing.T) {
 	client, _, _ := setupOpenAITestServer()
 
-	stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+	stream, err := client.CreateChatCompletionStream(t.Context(), openai.ChatCompletionRequest{
 		MaxTokens: 100, // This will trigger the validator to fail
 		Model:     openai.O3Mini,
 		Messages: []openai.ChatCompletionMessage{

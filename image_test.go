@@ -4,7 +4,6 @@ import (
 	utils "github.com/sashabaranov/go-openai/internal"
 	"github.com/sashabaranov/go-openai/internal/test/checks"
 
-	"context"
 	"fmt"
 	"io"
 	"os"
@@ -47,7 +46,7 @@ func TestImageFormBuilderFailures(t *testing.T) {
 	client.createFormBuilder = func(io.Writer) utils.FormBuilder {
 		return mockBuilder
 	}
-	ctx := context.Background()
+	ctx := t.Context()
 
 	req := ImageEditRequest{
 		Mask: &os.File{},
@@ -114,7 +113,7 @@ func TestVariImageFormBuilderFailures(t *testing.T) {
 	client.createFormBuilder = func(io.Writer) utils.FormBuilder {
 		return mockBuilder
 	}
-	ctx := context.Background()
+	ctx := t.Context()
 
 	req := ImageVariRequest{}
 
