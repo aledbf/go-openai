@@ -1,6 +1,8 @@
 package openai_test
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -99,7 +101,6 @@ func TestUploadBatchFileRequest_AddChatCompletion(t *testing.T) {
 	tests := []struct {
 		name string
 		args []args
-		want []byte
 	}{
 		{"", []args{
 			{
@@ -128,7 +129,7 @@ func TestUploadBatchFileRequest_AddChatCompletion(t *testing.T) {
 					},
 				},
 			},
-		}, []byte("{\"custom_id\":\"req-1\",\"body\":{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello!\"}],\"max_tokens\":5},\"method\":\"POST\",\"url\":\"/v1/chat/completions\"}\n{\"custom_id\":\"req-2\",\"body\":{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"Hello!\"}],\"max_tokens\":5},\"method\":\"POST\",\"url\":\"/v1/chat/completions\"}")}, //nolint:lll
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -136,9 +137,40 @@ func TestUploadBatchFileRequest_AddChatCompletion(t *testing.T) {
 			for _, arg := range tt.args {
 				r.AddChatCompletion(arg.customerID, arg.body)
 			}
+
+			// Compare objects after unmarshalling to avoid field order issues
 			got := r.MarshalJSONL()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Marshal() got = %v, want %v", got, tt.want)
+			gotLines := bytes.Split(got, []byte("\n"))
+
+			// Verify each line can be marshaled back to the expected structure
+			if len(gotLines) != len(tt.args) {
+				t.Errorf("Expected %d lines, got %d", len(tt.args), len(gotLines))
+				return
+			}
+
+			for i, line := range gotLines {
+				var gotReq openai.BatchChatCompletionRequest
+				if err := json.Unmarshal(line, &gotReq); err != nil {
+					t.Errorf("Failed to unmarshal line %d: %v", i, err)
+					continue
+				}
+
+				expectedArg := tt.args[i]
+				if gotReq.CustomID != expectedArg.customerID {
+					t.Errorf("Line %d: custom_id mismatch: got %q, want %q", i, gotReq.CustomID, expectedArg.customerID)
+				}
+
+				if !reflect.DeepEqual(gotReq.Body, expectedArg.body) {
+					t.Errorf("Line %d: body mismatch: got %v, want %v", i, gotReq.Body, expectedArg.body)
+				}
+
+				if gotReq.Method != "POST" {
+					t.Errorf("Line %d: method mismatch: got %q, want %q", i, gotReq.Method, "POST")
+				}
+
+				if gotReq.URL != openai.BatchEndpointChatCompletions {
+					t.Errorf("Line %d: URL mismatch: got %q, want %q", i, gotReq.URL, openai.BatchEndpointChatCompletions)
+				}
 			}
 		})
 	}
@@ -152,7 +184,6 @@ func TestUploadBatchFileRequest_AddCompletion(t *testing.T) {
 	tests := []struct {
 		name string
 		args []args
-		want []byte
 	}{
 		{"", []args{
 			{
@@ -169,7 +200,7 @@ func TestUploadBatchFileRequest_AddCompletion(t *testing.T) {
 					User:  "Hello",
 				},
 			},
-		}, []byte("{\"custom_id\":\"req-1\",\"body\":{\"model\":\"gpt-3.5-turbo\",\"user\":\"Hello\"},\"method\":\"POST\",\"url\":\"/v1/completions\"}\n{\"custom_id\":\"req-2\",\"body\":{\"model\":\"gpt-3.5-turbo\",\"user\":\"Hello\"},\"method\":\"POST\",\"url\":\"/v1/completions\"}")}, //nolint:lll
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -177,9 +208,40 @@ func TestUploadBatchFileRequest_AddCompletion(t *testing.T) {
 			for _, arg := range tt.args {
 				r.AddCompletion(arg.customerID, arg.body)
 			}
+
+			// Compare objects after unmarshalling to avoid field order issues
 			got := r.MarshalJSONL()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Marshal() got = %v, want %v", got, tt.want)
+			gotLines := bytes.Split(got, []byte("\n"))
+
+			// Verify each line can be marshaled back to the expected structure
+			if len(gotLines) != len(tt.args) {
+				t.Errorf("Expected %d lines, got %d", len(tt.args), len(gotLines))
+				return
+			}
+
+			for i, line := range gotLines {
+				var gotReq openai.BatchCompletionRequest
+				if err := json.Unmarshal(line, &gotReq); err != nil {
+					t.Errorf("Failed to unmarshal line %d: %v", i, err)
+					continue
+				}
+
+				expectedArg := tt.args[i]
+				if gotReq.CustomID != expectedArg.customerID {
+					t.Errorf("Line %d: custom_id mismatch: got %q, want %q", i, gotReq.CustomID, expectedArg.customerID)
+				}
+
+				if !reflect.DeepEqual(gotReq.Body, expectedArg.body) {
+					t.Errorf("Line %d: body mismatch: got %v, want %v", i, gotReq.Body, expectedArg.body)
+				}
+
+				if gotReq.Method != "POST" {
+					t.Errorf("Line %d: method mismatch: got %q, want %q", i, gotReq.Method, "POST")
+				}
+
+				if gotReq.URL != openai.BatchEndpointCompletions {
+					t.Errorf("Line %d: URL mismatch: got %q, want %q", i, gotReq.URL, openai.BatchEndpointCompletions)
+				}
 			}
 		})
 	}
@@ -193,7 +255,6 @@ func TestUploadBatchFileRequest_AddEmbedding(t *testing.T) {
 	tests := []struct {
 		name string
 		args []args
-		want []byte
 	}{
 		{"", []args{
 			{
@@ -210,7 +271,7 @@ func TestUploadBatchFileRequest_AddEmbedding(t *testing.T) {
 					Input: []string{"Hello", "World"},
 				},
 			},
-		}, []byte("{\"custom_id\":\"req-1\",\"body\":{\"input\":[\"Hello\",\"World\"],\"model\":\"gpt-3.5-turbo\"},\"method\":\"POST\",\"url\":\"/v1/embeddings\"}\n{\"custom_id\":\"req-2\",\"body\":{\"input\":[\"Hello\",\"World\"],\"model\":\"text-embedding-ada-002\"},\"method\":\"POST\",\"url\":\"/v1/embeddings\"}")}, //nolint:lll
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -218,9 +279,58 @@ func TestUploadBatchFileRequest_AddEmbedding(t *testing.T) {
 			for _, arg := range tt.args {
 				r.AddEmbedding(arg.customerID, arg.body)
 			}
+
+			// Compare objects after unmarshalling to avoid field order issues
 			got := r.MarshalJSONL()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Marshal() got = %v, want %v", got, tt.want)
+			gotLines := bytes.Split(got, []byte("\n"))
+
+			// Verify each line can be marshaled back to the expected structure
+			if len(gotLines) != len(tt.args) {
+				t.Errorf("Expected %d lines, got %d", len(tt.args), len(gotLines))
+				return
+			}
+
+			for i, line := range gotLines {
+				var gotReq openai.BatchEmbeddingRequest
+				if err := json.Unmarshal(line, &gotReq); err != nil {
+					t.Errorf("Failed to unmarshal line %d: %v", i, err)
+					continue
+				}
+
+				expectedArg := tt.args[i]
+				if gotReq.CustomID != expectedArg.customerID {
+					t.Errorf("Line %d: custom_id mismatch: got %q, want %q", i, gotReq.CustomID, expectedArg.customerID)
+				}
+
+				// Check the model
+				if gotReq.Body.Model != expectedArg.body.Model {
+					t.Errorf("Line %d: model mismatch: got %q, want %q", i, gotReq.Body.Model, expectedArg.body.Model)
+				}
+
+				// Marshal and unmarshal the input field to compare
+				expectedInputJSON, err := json.Marshal(expectedArg.body.Input)
+				if err != nil {
+					t.Errorf("Failed to marshal expected input: %v", err)
+					continue
+				}
+
+				gotInputJSON, err := json.Marshal(gotReq.Body.Input)
+				if err != nil {
+					t.Errorf("Failed to marshal got input: %v", err)
+					continue
+				}
+
+				if string(gotInputJSON) != string(expectedInputJSON) {
+					t.Errorf("Line %d: input mismatch: got %s, want %s", i, gotInputJSON, expectedInputJSON)
+				}
+
+				if gotReq.Method != "POST" {
+					t.Errorf("Line %d: method mismatch: got %q, want %q", i, gotReq.Method, "POST")
+				}
+
+				if gotReq.URL != openai.BatchEndpointEmbeddings {
+					t.Errorf("Line %d: URL mismatch: got %q, want %q", i, gotReq.URL, openai.BatchEndpointEmbeddings)
+				}
 			}
 		})
 	}
