@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"reflect"
-	"strings"
 )
 
 // Chat message role defined by the OpenAI API.
@@ -264,59 +262,13 @@ type ChatCompletionRequest struct {
 	// Controls effort on reasoning for reasoning models. It can be set to "low", "medium", or "high".
 	ReasoningEffort string `json:"reasoning_effort,omitempty"`
 	// Metadata to store with the completion.
-	Metadata   map[string]string `json:"metadata,omitempty"`
-	ExtraParam map[string]any    `json:"-"`
-}
-
-func (c ChatCompletionRequest) MarshalJSON() ([]byte, error) {
-	baseMap := make(map[string]any)
-
-	v := reflect.ValueOf(c)
-	t := reflect.TypeOf(c)
-
-	for i := 0; i < v.NumField(); i++ {
-		field := t.Field(i)
-		fieldVal := v.Field(i)
-
-		jsonTag := field.Tag.Get("json")
-		if jsonTag == "-" || jsonTag == "" {
-			continue
-		}
-
-		name := strings.TrimSuffix(jsonTag, ",omitempty")
-		if name == "" {
-			name = field.Name
-		}
-
-		if strings.HasSuffix(jsonTag, ",omitempty") && isEmptyValue(fieldVal) {
-			continue
-		}
-
-		baseMap[name] = fieldVal.Interface()
-	}
-
-	for k, v := range c.ExtraParam {
-		if _, exists := baseMap[k]; !exists {
-			baseMap[k] = v
-		}
-	}
-
-	return json.Marshal(baseMap)
-}
-
-func isEmptyValue(v reflect.Value) bool {
-	//nolint:exhaustive
-	switch v.Kind() {
-	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
-		return v.Len() == 0
-	case reflect.Bool,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
-		reflect.Float32, reflect.Float64,
-		reflect.Interface, reflect.Pointer:
-		return v.IsZero()
-	}
-	return false
+	Metadata map[string]string `json:"metadata,omitempty"`
+	// Add additional JSON properties to the request
+	ExtraBody map[string]any `json:"extra_body,omitempty"`
+	// ExtraHeaders to add to the request
+	ExtraHeaders map[string]string `json:"extra_headers,omitempty"`
+	// ExtraQueryParams to add to the request
+	ExtraQuery map[string]string `json:"extra_query,omitempty"`
 }
 
 type StreamOptions struct {
@@ -457,6 +409,9 @@ func (c *Client) CreateChatCompletion(
 		http.MethodPost,
 		c.fullURL(urlSuffix, withModel(request.Model)),
 		withBody(request),
+		withExtraHeaders(request.ExtraHeaders),
+		withExtraQuery(request.ExtraQuery),
+		withExtraBody(request.ExtraBody),
 	)
 	if err != nil {
 		return
